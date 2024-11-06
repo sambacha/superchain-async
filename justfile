@@ -6,3 +6,6 @@ test-forge:
 test-viem:
     supersim --log.level DEBUG --log.format terminal --logs.directory logs --interop.autorelay & sleep 3 && yarn test
     pkill -f supersim
+
+promify file:
+    python3 scripts/promify_contracts.py --file {{file}}
