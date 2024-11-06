@@ -1,12 +1,14 @@
 pragma solidity ^0.8.13;
-import {console} from "forge-std/console.sol";
 import {LocalAsyncProxy} from "./LocalAsyncProxy.sol";
 
+// XAddress is a struct that represents an address on a chain
 struct XAddress {
     address addr;
     uint256 chainId;
 }
 
+// AsyncCall is a struct that represents an async call to a remote contract
+// It includes the sender, the recipient, the nonce, and the calldata payload
 struct AsyncCall {
     XAddress from;
     XAddress to;
@@ -14,6 +16,8 @@ struct AsyncCall {
     bytes data;
 }
 
+// AsyncCallback is a struct that represents a callback to a local contract
+// It includes the async call ID, a success flag, and the return data
 struct AsyncCallback {
     bytes32 asyncCallId;
     bool success;
@@ -21,7 +25,7 @@ struct AsyncCallback {
 }
 
 library AsyncUtils {
-    function calculateRemoteProxyAddress(address _localAddress, address _remoteAddress, uint256 _chainId) internal pure returns (LocalAsyncProxy) {
+    function calculateLocalAsyncProxyAddress(address _localAddress, address _remoteAddress, uint256 _chainId) internal pure returns (LocalAsyncProxy) {
         return LocalAsyncProxy(address(uint160(uint(keccak256(abi.encodePacked(
             bytes1(0xff),
             _localAddress,

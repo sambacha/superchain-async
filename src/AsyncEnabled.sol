@@ -33,7 +33,7 @@ contract AsyncEnabled is SuperchainEnabled {
         // TODO: require xDMsender == LocalAsyncProxy for source/from targetAddress and local/block.chainid
         console.log("in relayAsyncCall, checking validity of CDM");
         // TODO: other sanity checks on _asyncCall values
-        LocalAsyncProxy expectedCrossDomainSender = AsyncUtils.calculateRemoteProxyAddress(
+        LocalAsyncProxy expectedCrossDomainSender = AsyncUtils.calculateLocalAsyncProxyAddress(
             _asyncCall.from.addr,
             address(this),
             block.chainid
@@ -74,7 +74,7 @@ contract AsyncEnabled is SuperchainEnabled {
         uint256 crossDomainCallbackSource = IL2ToL2CrossDomainMessenger(Predeploys.L2_TO_L2_CROSS_DOMAIN_MESSENGER).crossDomainMessageSource();
         // TODO
 
-        LocalAsyncProxy remoteProxy = AsyncUtils.calculateRemoteProxyAddress(
+        LocalAsyncProxy remoteProxy = AsyncUtils.calculateLocalAsyncProxyAddress(
             address(this),
             crossDomainCallbackSender,
             crossDomainCallbackSource

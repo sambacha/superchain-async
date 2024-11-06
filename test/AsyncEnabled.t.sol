@@ -25,7 +25,7 @@ contract AsyncEnabledTest is Test {
         uint256 remoteChainId = 420;
         asyncContract.spawnRemoteSelf(remoteChainId);
 
-        LocalAsyncProxy expectedRemoteSelf = AsyncUtils.calculateRemoteProxyAddress(
+        LocalAsyncProxy expectedRemoteSelf = AsyncUtils.calculateLocalAsyncProxyAddress(
             address(asyncContract),
             address(asyncContract),
             remoteChainId
