@@ -1,5 +1,4 @@
 pragma solidity ^0.8.13;
-import {console} from "forge-std/console.sol";
 import {AsyncPromise} from "./AsyncPromise.sol";
 import {AsyncUtils, AsyncCall, XAddress} from "./AsyncUtils.sol";
 import {SuperchainEnabled} from "./SuperchainEnabled.sol";
