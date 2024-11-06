@@ -8,19 +8,19 @@ import {LocalAsyncProxy} from "../src/LocalAsyncProxy.sol";
 // and assume that we want to create an async contract as follows:
 contract MyAsyncEnabled is AsyncEnabled {
     // remote caller spawner for testing purposes
-    function spawnRemoteSelf(uint256 _chainId) external returns (address) {
-        address remoteCaller = getRemoteSelf(_chainId);
+    function spawnRemoteSelf(uint256 _chainId) public returns (address) {
+        address remoteCaller = getAsyncProxy(address(this), _chainId);
         return remoteCaller;
     }
 
     function makeFunc1Promise(uint256 _remoteChainId) external returns (address) {
-        RemoteMyAsyncEnabled remoteSelf = RemoteMyAsyncEnabled(getRemoteSelf(_remoteChainId));
+        RemoteMyAsyncEnabled remoteSelf = RemoteMyAsyncEnabled(spawnRemoteSelf(_remoteChainId));
         MyAsyncFunction1Promise myPromise = remoteSelf.myAsyncFunction1();
         return address(myPromise);
     }
 
     function makeFunc1Callback(uint256 _remoteChainId) external returns (address) {
-        RemoteMyAsyncEnabled remoteSelf = RemoteMyAsyncEnabled(getRemoteSelf(_remoteChainId));
+        RemoteMyAsyncEnabled remoteSelf = RemoteMyAsyncEnabled(spawnRemoteSelf(_remoteChainId));
         MyAsyncFunction1Promise myPromise = remoteSelf.myAsyncFunction1();
         myPromise.then(this.myCallback1);
         return address(myPromise);
@@ -45,13 +45,13 @@ contract MyAsyncEnabled is AsyncEnabled {
     }
 
     function doLoop1(uint256 _remoteChainId, address _remoteAddress) external {
-        RemoteMyAsyncEnabled remoteSelf = RemoteMyAsyncEnabled(getRemoteSelf(_remoteChainId));
+        RemoteMyAsyncEnabled remoteSelf = RemoteMyAsyncEnabled(getAsyncProxy(_remoteAddress, _remoteChainId));
         remoteSelf.myAsyncFunction1().then(this.myCallback1);
         return;
     }
 
     function doLoop2(uint256 _remoteChainId) external {
-        RemoteMyAsyncEnabled remoteSelf = RemoteMyAsyncEnabled(getRemoteSelf(_remoteChainId));
+        RemoteMyAsyncEnabled remoteSelf = RemoteMyAsyncEnabled(spawnRemoteSelf(_remoteChainId));
         remoteSelf.myAsyncFunction2(true).then(this.myCallback2);
         return;
     }

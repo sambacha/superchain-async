@@ -63,10 +63,11 @@ export const walletB = createWalletClient({
     chain: chainB
 })
 
-export const deployAndGetContract = async (wallet: Wallet, client: PublicClient, contractImport: any) => {
+export const deployAndGetContract = async (contractImport: any, constructorArgs: any[], wallet: Wallet, client: PublicClient) => {
     const deployTxHash = await wallet.deployContract({
         abi: contractImport.abi,
         bytecode: contractImport.bytecode.object,
+        args: constructorArgs,
     })
 
     await client.waitForTransactionReceipt({
@@ -86,4 +87,8 @@ export const deployAndGetContract = async (wallet: Wallet, client: PublicClient,
         abi: contractImport.abi,
         client: wallet,
     })
+}
+
+export function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }

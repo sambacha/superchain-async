@@ -11,27 +11,22 @@ import { Predeploys } from "@contracts-bedrock/libraries/Predeploys.sol";
 
 contract AsyncEnabled is SuperchainEnabled {
     // mapping of address to chainId to remote caller proxy, should probably be private
-    mapping(address => mapping(uint256 => LocalAsyncProxy)) public remoteCallerProxies;
+    mapping(address => mapping(uint256 => LocalAsyncProxy)) public remoteAsyncProxies;
 
     constructor() {
         console.log("an asyncEnabled contract was just deployed!");
     }
 
     // gets a remote instance of the contract, creating it if it doesn't exist
-    function getRemoteInstance(address _remoteAddress, uint256 _remoteChainId) internal returns (address) {
-        if (address(remoteCallerProxies[_remoteAddress][_remoteChainId]) == address(0)) {
-            remoteCallerProxies[_remoteAddress][_remoteChainId] = new LocalAsyncProxy{salt: bytes32(0)}(_remoteAddress, _remoteChainId);
+    function getAsyncProxy(address _remoteAddress, uint256 _remoteChainId) internal returns (address) {
+        if (address(remoteAsyncProxies[_remoteAddress][_remoteChainId]) == address(0)) {
+            remoteAsyncProxies[_remoteAddress][_remoteChainId] = new LocalAsyncProxy{salt: bytes32(0)}(_remoteAddress, _remoteChainId);
         }
-        return address(remoteCallerProxies[_remoteAddress][_remoteChainId]);
-    }
-
-    function getRemoteSelf(uint256 _chainId) internal returns (address) {
-        return address(getRemoteInstance(address(this), _chainId));
+        return address(remoteAsyncProxies[_remoteAddress][_remoteChainId]);
     }
 
     function relayAsyncCall(AsyncCall calldata _asyncCall) external {
-        // TODO: require xDMsender == LocalAsyncProxy for source/from targetAddress and local/block.chainid
-        console.log("in relayAsyncCall, checking validity of CDM");
+        // Ensure the crossDomainSender is a valid async proxy for the remote address and chain
         // TODO: other sanity checks on _asyncCall values
         LocalAsyncProxy expectedCrossDomainSender = AsyncUtils.calculateLocalAsyncProxyAddress(
             _asyncCall.from.addr,
