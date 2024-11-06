@@ -4,5 +4,5 @@ test-forge:
     pkill -f supersim
 
 test-viem:
-    supersim > /dev/null 2>&1 & sleep 3 && yarn test
+    supersim & sleep 3 && yarn test
     pkill -f supersim
