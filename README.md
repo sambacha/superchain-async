@@ -9,7 +9,7 @@ This library provides an abstraction for asynchronous function calls across inte
 
 2. **LocalAsyncProxy.sol**: A local proxy representing a contract on a remote chain which can be called with standard Solidity function calls. It handles the creation of async calls and returns a promise contract that will eventually trigger a callback with the return value of the remote async call. By using local proxies, we can make async calls with **vanilla Solidity syntax, no custom encoding or messaging functions.**
 
-3. **AsyncPromise.sol**: Represents a promise that tracks the state of an async call on an initiating chain. Contracts which create promises can attach callbacks to be executed once the promise is resolved via `.on`. The arguments of a callback function must the return values of the async call which created the promise.
+3. **AsyncPromise.sol**: Represents a promise that tracks the state of an async call on an initiating chain. Contracts which create promises can attach callbacks via `.on` to be executed once the async call is executed on the remote chain. The arguments of a callback function must match the return values of the async call which created the promise.
 
 ### Contract "Promification" Pattern
 
