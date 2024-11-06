@@ -20,6 +20,11 @@ contract LocalAsyncProxy is SuperchainEnabled {
     // mapping of callId to promise
     mapping(bytes32 => AsyncPromise) public promisesById;
 
+    // TODO: This MVP has the local contract deploy its proxies.
+    // This has the advantage that the local contract must be AsyncEnabled,
+    // but has the disadvantage that the remote contract is not (e.g. if non-CREATE2).
+    // Consider using a generic CREATE2, or requiring the remote contract to
+    // confirm it is also AsyncEnabled somehow.
     constructor(address _remoteAddress, uint256 _chainId) {
         remoteXAddress = XAddress(_remoteAddress, _chainId);
         localAddress = msg.sender;
