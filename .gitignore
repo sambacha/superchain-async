@@ -2,4 +2,7 @@
 cache/
 out/
 
+# default supersim anvil logs
+logs/
+
 node_modules/

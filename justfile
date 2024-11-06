@@ -4,5 +4,5 @@ test-forge:
     pkill -f supersim
 
 test-viem:
-    supersim & sleep 3 && yarn test
+    supersim --log.level DEBUG --log.format terminal --logs.directory logs --interop.autorelay & sleep 3 && yarn test
     pkill -f supersim
