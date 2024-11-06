@@ -4,10 +4,11 @@ import {console} from "forge-std/console.sol";
 enum AsyncPromiseState {
     WAITING_FOR_SET_CALLBACK_SELECTOR,
     WAITING_FOR_CALLBACK_EXECUTION,
-    RESOLVED // as-yet unused
+    RESOLVED
 }
 
 contract AsyncPromise {
+    // The local contract which initiated the async call
     address public immutable localInvoker;
     address public immutable remoteTarget;
     bool public resolved = false;
@@ -24,6 +25,7 @@ contract AsyncPromise {
     function markResolved() external {
         require(msg.sender == localInvoker, "Only the invoker can mark this promise's callback resolved");
         resolved = true;
+        state = AsyncPromiseState.RESOLVED;
     }
 
     fallback() external {
