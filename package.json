@@ -7,6 +7,10 @@
   "license": "MIT",
   "private": false,
   "devDependencies": {
-    "viem": "^2.21.41"
+    "viem": "^2.21.41",
+    "vitest": "^2.1.4"
+  },
+  "scripts": {
+    "test": "vitest"
   }
 }
