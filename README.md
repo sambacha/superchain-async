@@ -70,7 +70,3 @@ just test-forge
 # Integration tests for ExampleAsyncEnabled
 just test-viem
 ```
-
-
-TODO
-[] supersim is a dependency
