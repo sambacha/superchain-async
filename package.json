@@ -5,5 +5,8 @@
   "main": "index.js",
   "author": "ben-chain <ben@optimism.io>",
   "license": "MIT",
-  "private": false
+  "private": false,
+  "devDependencies": {
+    "viem": "^2.21.41"
+  }
 }

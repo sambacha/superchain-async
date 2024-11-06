@@ -1,3 +1,5 @@
 # Forge compiler files
 cache/
 out/
+
+node_modules/
