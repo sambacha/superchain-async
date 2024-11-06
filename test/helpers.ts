@@ -1,5 +1,5 @@
 // config.ts
-import { createTestClient, http, createWalletClient, createPublicClient } from 'viem'
+import { createTestClient, http, createWalletClient, createPublicClient, getContract } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { defineChain } from 'viem'
 
@@ -62,3 +62,28 @@ export const walletB = createWalletClient({
     transport: http(),
     chain: chainB
 })
+
+export const deployAndGetContract = async (wallet: Wallet, client: PublicClient, contractImport: any) => {
+    const deployTxHash = await wallet.deployContract({
+        abi: contractImport.abi,
+        bytecode: contractImport.bytecode.object,
+    })
+
+    await client.waitForTransactionReceipt({
+        hash: deployTxHash,
+    })
+
+    const receipt = await client.getTransactionReceipt({
+        hash: deployTxHash,
+    })
+
+    if (!receipt.contractAddress) {
+        throw new Error("Contract address undefined")
+    }
+
+    return getContract({
+        address: receipt.contractAddress,
+        abi: contractImport.abi,
+        client: wallet,
+    })
+}

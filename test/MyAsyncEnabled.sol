@@ -44,7 +44,7 @@ contract MyAsyncEnabled is AsyncEnabled {
         return;
     }
 
-    function doLoop1(uint256 _remoteChainId) external {
+    function doLoop1(uint256 _remoteChainId, address _remoteAddress) external {
         RemoteMyAsyncEnabled remoteSelf = RemoteMyAsyncEnabled(getRemoteSelf(_remoteChainId));
         remoteSelf.myAsyncFunction1().then(this.myCallback1);
         return;
