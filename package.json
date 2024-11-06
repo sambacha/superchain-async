@@ -1,0 +1,9 @@
+{
+  "name": "superchain-async",
+  "version": "0.0.1",
+  "description": "Async L2<>L2 solidity calls for superchain",
+  "main": "index.js",
+  "author": "ben-chain <ben@optimism.io>",
+  "license": "MIT",
+  "private": false
+}
