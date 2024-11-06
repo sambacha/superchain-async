@@ -5,13 +5,13 @@ import {AsyncUtils, AsyncCall, XAddress} from "./AsyncUtils.sol";
 import {SuperchainEnabled} from "./SuperchainEnabled.sol";
 import {AsyncEnabled} from "./AsyncEnabled.sol";
 
-// An AsyncRemoteProxy is a local representation of a contract on a remote chain.
-// Calling an AsyncRemoteProxy triggers an authenticated call to an async function,
+// An LocalAsyncProxy is a local representation of a contract on a remote chain.
+// Calling an LocalAsyncProxy triggers an authenticated call to an async function,
 //  on the remote chain and returns a local Promise contract,
 //  which will eventually trigger a local callback with the return value of the remote async call.
-contract AsyncRemoteProxy is SuperchainEnabled {
+contract LocalAsyncProxy is SuperchainEnabled {
     // address and chainId of the remote contract triggered by calling this local proxy
-    XAddress internal remoteContract;
+    XAddress internal remoteXAddress;
     // address of local contract which can call this remote proxy to send async calls
     address public localAddress;
     // nonce for promises made by this remote proxy
@@ -22,12 +22,12 @@ contract AsyncRemoteProxy is SuperchainEnabled {
     mapping(bytes32 => AsyncPromise) public promisesById;
 
     constructor(address _remoteAddress, uint256 _chainId) {
-        remoteContract = XAddress(msg.sender, _chainId);
+        remoteXAddress = XAddress(_remoteAddress, _chainId);
         localAddress = msg.sender;
     }
 
-    function getRemoteContract() external view returns (XAddress memory) {
-        return remoteContract;
+    function getRemoteXAddress() external view returns (XAddress memory) {
+        return remoteXAddress;
     }
 
     fallback(bytes calldata data) external returns (bytes memory) {
@@ -35,14 +35,14 @@ contract AsyncRemoteProxy is SuperchainEnabled {
 
         AsyncCall memory asyncCall = AsyncCall(
             fromContract,
-            remoteContract,
+            remoteXAddress,
             nonce,
             data
         );
 
         bytes32 callId = AsyncUtils.getAsyncCallId(asyncCall);
 
-        AsyncPromise promiseContract = new AsyncPromise(msg.sender, remoteContract.addr, callId);
+        AsyncPromise promiseContract = new AsyncPromise(msg.sender, remoteXAddress.addr, callId);
         promisesByNonce[nonce] = promiseContract;
         promisesById[callId] = promiseContract;
         nonce++;
@@ -55,8 +55,8 @@ contract AsyncRemoteProxy is SuperchainEnabled {
 
         AsyncUtils.encodeAsyncCall(asyncCall);
         _xMessageContract(
-            remoteContract.chainId,
-            remoteContract.addr,
+            remoteXAddress.chainId,
+            remoteXAddress.addr,
             relayCallPayload
         );
 

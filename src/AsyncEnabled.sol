@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 import {AsyncUtils} from "./AsyncUtils.sol";
 import {console} from "forge-std/console.sol";
-import {AsyncRemoteProxy} from "./AsyncRemoteProxy.sol";
+import {LocalAsyncProxy} from "./LocalAsyncProxy.sol";
 import {AsyncCall, AsyncCallback} from "./AsyncUtils.sol";
 import {SuperchainEnabled} from "./SuperchainEnabled.sol";
 import {AsyncPromise} from "./AsyncPromise.sol";
@@ -11,7 +11,7 @@ import { Predeploys } from "@contracts-bedrock/libraries/Predeploys.sol";
 
 contract AsyncEnabled is SuperchainEnabled {
     // mapping of address to chainId to remote caller proxy, should probably be private
-    mapping(address => mapping(uint256 => AsyncRemoteProxy)) public remoteCallerProxies;
+    mapping(address => mapping(uint256 => LocalAsyncProxy)) public remoteCallerProxies;
 
     constructor() {
         console.log("an asyncEnabled contract was just deployed!");
@@ -20,7 +20,7 @@ contract AsyncEnabled is SuperchainEnabled {
     // gets a remote instance of the contract, creating it if it doesn't exist
     function getRemoteInstance(address _remoteAddress, uint256 _remoteChainId) internal returns (address) {
         if (address(remoteCallerProxies[_remoteAddress][_remoteChainId]) == address(0)) {
-            remoteCallerProxies[_remoteAddress][_remoteChainId] = new AsyncRemoteProxy{salt: bytes32(0)}(_remoteAddress, _remoteChainId);
+            remoteCallerProxies[_remoteAddress][_remoteChainId] = new LocalAsyncProxy{salt: bytes32(0)}(_remoteAddress, _remoteChainId);
         }
         return address(remoteCallerProxies[_remoteAddress][_remoteChainId]);
     }
@@ -30,10 +30,10 @@ contract AsyncEnabled is SuperchainEnabled {
     }
 
     function relayAsyncCall(AsyncCall calldata _asyncCall) external {
-        // TODO: require xDMsender == AsyncRemoteProxy for source/from targetAddress and local/block.chainid
+        // TODO: require xDMsender == LocalAsyncProxy for source/from targetAddress and local/block.chainid
         console.log("in relayAsyncCall, checking validity of CDM");
         // TODO: other sanity checks on _asyncCall values
-        AsyncRemoteProxy expectedCrossDomainSender = AsyncUtils.calculateRemoteProxyAddress(
+        LocalAsyncProxy expectedCrossDomainSender = AsyncUtils.calculateRemoteProxyAddress(
             _asyncCall.from.addr,
             address(this),
             block.chainid
@@ -74,7 +74,7 @@ contract AsyncEnabled is SuperchainEnabled {
         uint256 crossDomainCallbackSource = IL2ToL2CrossDomainMessenger(Predeploys.L2_TO_L2_CROSS_DOMAIN_MESSENGER).crossDomainMessageSource();
         // TODO
 
-        AsyncRemoteProxy remoteProxy = AsyncUtils.calculateRemoteProxyAddress(
+        LocalAsyncProxy remoteProxy = AsyncUtils.calculateRemoteProxyAddress(
             address(this),
             crossDomainCallbackSender,
             crossDomainCallbackSource

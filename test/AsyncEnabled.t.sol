@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import {Test, console} from "forge-std/Test.sol";
 import {AsyncEnabled} from "../src/AsyncEnabled.sol";
-import {AsyncRemoteProxy} from "../src/AsyncRemoteProxy.sol";
+import {LocalAsyncProxy} from "../src/LocalAsyncProxy.sol";
 import {AsyncPromise} from "../src/AsyncPromise.sol";
 import {AsyncUtils, AsyncCall, XAddress} from "../src/AsyncUtils.sol";
 
@@ -25,7 +25,7 @@ contract AsyncEnabledTest is Test {
         uint256 remoteChainId = 420;
         asyncContract.spawnRemoteSelf(remoteChainId);
 
-        AsyncRemoteProxy expectedRemoteSelf = AsyncUtils.calculateRemoteProxyAddress(
+        LocalAsyncProxy expectedRemoteSelf = AsyncUtils.calculateRemoteProxyAddress(
             address(asyncContract),
             address(asyncContract),
             remoteChainId
@@ -33,10 +33,10 @@ contract AsyncEnabledTest is Test {
 
         assertEq(
             address(expectedRemoteSelf).codehash,
-            keccak256(type(AsyncRemoteProxy).runtimeCode)
+            keccak256(type(LocalAsyncProxy).runtimeCode)
         );
 
-        XAddress memory remoteProxyTarget = expectedRemoteSelf.getRemoteContract();
+        XAddress memory remoteProxyTarget = expectedRemoteSelf.getRemoteXAddress();
         assertEq(remoteProxyTarget.addr, address(asyncContract));
         assertEq(remoteProxyTarget.chainId, remoteChainId);
     }

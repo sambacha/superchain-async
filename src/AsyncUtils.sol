@@ -1,6 +1,6 @@
 pragma solidity ^0.8.13;
 import {console} from "forge-std/console.sol";
-import {AsyncRemoteProxy} from "./AsyncRemoteProxy.sol";
+import {LocalAsyncProxy} from "./LocalAsyncProxy.sol";
 
 struct XAddress {
     address addr;
@@ -21,14 +21,14 @@ struct AsyncCallback {
 }
 
 library AsyncUtils {
-    function calculateRemoteProxyAddress(address _localAddress, address _remoteAddress, uint256 _chainId) internal pure returns (AsyncRemoteProxy) {
-        return AsyncRemoteProxy(address(uint160(uint(keccak256(abi.encodePacked(
+    function calculateRemoteProxyAddress(address _localAddress, address _remoteAddress, uint256 _chainId) internal pure returns (LocalAsyncProxy) {
+        return LocalAsyncProxy(address(uint160(uint(keccak256(abi.encodePacked(
             bytes1(0xff),
             _localAddress,
             bytes32(0),
             keccak256(
                 abi.encodePacked(
-                    type(AsyncRemoteProxy).creationCode,
+                    type(LocalAsyncProxy).creationCode,
                     abi.encode(_remoteAddress, _chainId)
                 )
             )
