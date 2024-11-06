@@ -1,5 +1,5 @@
 // config.ts
-import { createTestClient, http, createWalletClient, createPublicClient, getContract } from 'viem'
+import { http, createWalletClient, createPublicClient, getContract } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { defineChain } from 'viem'
 
