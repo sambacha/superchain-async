@@ -9,7 +9,7 @@ This library provides an abstraction for asynchronous function calls across inte
 
 2. **LocalAsyncProxy.sol**: A local proxy representing a contract on a remote chain which can be called with standard Solidity function calls. It handles the creation of async calls and returns a promise contract that will eventually trigger a callback with the return value of the remote async call. By using local proxies, we can make async calls with **vanilla Solidity syntax, no custom encoding or messaging functions.**
 
-3. **AsyncPromise.sol**: Represents a promise that tracks the state of an async call on an initiating chain. Contracts which create promises can attach callbacks via `.on` to be executed once the async call is executed on the remote chain. The arguments of a callback function must match the return values of the async call which created the promise.
+3. **AsyncPromise.sol**: Represents a promise that tracks the state of an async call on an initiating chain. Contracts which create promises can attach callbacks via `.then` to be executed once the async call is executed on the remote chain. The arguments of a callback function must match the return values of the async call which created the promise.
 
 ### Contract "Promification" Pattern
 
@@ -22,10 +22,10 @@ contract MyContract {
     }
 }
 ```
-We can use this to define a Promise contract, with a single method, `on(...)`, which accepts a callback function. The callback function must take the same arguments as the async function's return values.
+We can use this to define a Promise contract, with a single method, `then(...)`, which accepts a callback function. The callback function must take the same arguments as the async function's return values.
 ```solidity
 interface myAsyncFunctionPromise {
-    function on(function (uint256, bytes32) external) external;
+    function then(function (uint256, bytes32) external) external;
 }
 ```
 We can then define a "remote" interface for the asyncEnabled contract, which returns promise contracts for all of its async functions.
@@ -38,7 +38,7 @@ To initiate an async call, we can deploy cast a `LocalAsyncProxy` contract to th
 
 ```solidity
 MyContractRemote remote = MyContractRemote(this.getAsyncProxy(remoteAddress, remoteChainId));
-remote.myAsyncFunction().on(this.myCallback);
+remote.myAsyncFunction().then(this.myCallback);
 ```
 #### Interface Generator
 For convenience, this repo contains a ⚠️VERY JANKY, WIP⚠️ implementation of an interface generator for promise contracts. Running `just promify MyContract` will generate the `MyContractRemote` interface in `src/interface/async` and add an import line to `MyContract.sol`. Use at your own risk!
